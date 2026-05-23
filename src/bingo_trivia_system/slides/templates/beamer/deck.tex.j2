@@ -1,0 +1,19 @@
+\documentclass[aspectratio=169]{beamer}
+\usetheme{metropolis}
+\usepackage{graphicx}
+\title{ {{- event.title -}} }
+\subtitle{ {{- variant -}} }
+\begin{document}
+\maketitle
+{% for q in questions %}
+\begin{frame}{Question {{ q.index }}}
+  {\Large {{ q.prompt }}}
+  {% if q.image %}\begin{center}\includegraphics[height=0.5\textheight]{ {{- q.image -}} }\end{center}{% endif %}
+  {% if variant == 'answers' %}
+  \begin{itemize}
+    {% for a in q.answers %}\item {% if q.answers|length > 1 %}{{ q.index }}-{{ loop.index }} · {% else %}{{ q.index }} · {% endif %}{{ a }}{% endfor %}
+  \end{itemize}
+  {% endif %}
+\end{frame}
+{% endfor %}
+\end{document}

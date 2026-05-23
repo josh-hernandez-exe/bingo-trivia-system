@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ event.title }} — {{ variant }}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/black.css">
+</head>
+<body>
+  <div class="reveal"><div class="slides">
+    <section><h1>{{ event.title }}</h1><h3>{{ variant }} deck</h3></section>
+    {% for q in questions %}
+    <section>
+      <h2>Question {{ q.index }}</h2>
+      <p style="font-size:1.6em;">{{ q.prompt }}</p>
+      {% if q.image %}<img src="images/{{ q.image }}" style="max-height:45vh;">
+      {% if q.image_caption %}<div><em>{{ q.image_caption }}</em></div>{% endif %}{% endif %}
+      {% if variant == 'answers' %}
+      <div style="margin-top:1em;">
+        {% for a in q.answers %}
+          <span style="display:inline-block;margin:.2em;padding:.4em .9em;background:#1f2937;border-radius:999px;">
+            {% if q.answers|length > 1 %}{{ q.index }}-{{ loop.index }} · {% else %}{{ q.index }} · {% endif %}{{ a }}
+          </span>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if q.speaker_notes %}<aside class="notes">{{ q.speaker_notes }}</aside>{% endif %}
+    </section>
+    {% endfor %}
+  </div></div>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+  <script>Reveal.initialize({hash:true, transition:'fade'});</script>
+</body>
+</html>
