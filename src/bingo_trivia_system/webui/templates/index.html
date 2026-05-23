@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>bingo-trivia-system</h1>
+<p>Events on disk:</p>
+<ul>
+  {% for e in events %}<li><a href="/event/{{ e }}">{{ e }}</a></li>{% else %}
+  <li><em>No events found. Try <code>bts event new &lt;id&gt;</code>.</em></li>{% endfor %}
+</ul>
+{% endblock %}

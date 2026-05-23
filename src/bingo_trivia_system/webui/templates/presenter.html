@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Presenter — {{ event.title }}{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/presenter.css">{% endblock %}
+{% block content %}
+<div id="presenter">
+  <header>
+    <span class="title">{{ event.title }}</span>
+    <span class="counter"><span id="qIdx">0</span> / {{ questions|length }}</span>
+    <span class="timer" id="timer">--</span>
+  </header>
+
+  <section class="stage" id="stage">
+    <div id="prompt" class="prompt">Press <kbd>Space</kbd> to start.</div>
+    <div id="image-wrap"></div>
+  </section>
+
+  <section class="answers" id="answers"></section>
+
+  <aside id="cardOverlay" class="card-overlay hidden">
+    <h2>Called BINGO!</h2>
+    <div id="overlayCard"></div>
+  </aside>
+
+  <footer class="help">
+    <kbd>Space</kbd> next · <kbd>R</kbd> reveal · <kbd>P</kbd> pause ·
+    <kbd>T</kbd> +30s · <kbd>B</kbd> verify-bingo · <kbd>Esc</kbd> hide card
+  </footer>
+</div>
+
+<script>
+  const eventId = {{ event.id|tojson }};
+  const questions = {{ questions|tojson }};
+  const post = (action, body) => fetch(`/event/${eventId}/present/${action}`, {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(body || {})
+  });
+
+  const stage = document.getElementById('prompt');
+  const imageWrap = document.getElementById('image-wrap');
+  const answersEl = document.getElementById('answers');
+  const overlay = document.getElementById('cardOverlay');
+  const overlayCard = document.getElementById('overlayCard');
+
+  function applyState(s) {
+    document.getElementById('qIdx').textContent = s.current_q_index;
+    document.getElementById('timer').textContent = s.timer_remaining;
+    if (s.current_q_index === 0) {
+      stage.textContent = 'Press Space to start.';
+      imageWrap.innerHTML = '';
+      answersEl.innerHTML = '';
+    } else {
+      const q = questions[s.current_q_index - 1];
+      if (q) {
+        stage.textContent = q.prompt;
+        imageWrap.innerHTML = q.image
+          ? `<img src="/static/event-images/${q.image}" alt="">` : '';
+        if (s.revealed) {
+          answersEl.innerHTML = q.answer_ids.map((a, i) =>
+            `<span class="chip">${q.answer_ids.length > 1 ? (q.index + '-' + (i+1)) : q.index} · ${a}</span>`
+          ).join('');
+        } else {
+          answersEl.innerHTML = '';
+        }
+      }
+    }
+    if (s.show_card_id) {
+      overlay.classList.remove('hidden');
+      overlayCard.innerHTML = `<iframe src="/event/${eventId}/card/${s.show_card_id}?show_answers=${s.show_answers ? 1 : 0}"></iframe>`;
+    } else {
+      overlay.classList.add('hidden');
+    }
+  }
+
+  const es = new EventSource(`/event/${eventId}/present/stream`);
+  es.onmessage = (m) => applyState(JSON.parse(m.data));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT') return;
+    if (e.code === 'Space' || e.code === 'ArrowRight') { post('advance'); e.preventDefault(); }
+    else if (e.code === 'ArrowLeft') post('back');
+    else if (e.key === 'r' || e.key === 'R') post('reveal');
+    else if (e.key === 'p' || e.key === 'P') post('pause');
+    else if (e.key === 't' || e.key === 'T') post('add-time', {seconds: 30});
+    else if (e.key === 'b' || e.key === 'B') {
+      const cid = prompt('Card ID to verify:');
+      if (cid) post('show-card', {card_id: cid});
+    }
+    else if (e.key === 'a' || e.key === 'A') post('toggle-answers');
+    else if (e.key === 'Escape') post('hide-card');
+  });
+</script>
+{% endblock %}

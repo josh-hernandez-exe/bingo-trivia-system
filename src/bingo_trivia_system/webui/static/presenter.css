@@ -1,0 +1,17 @@
+html, body { background: #0b0d11; color: #f3f4f6; min-height: 100vh; margin:0; padding:0; }
+main { max-width: none; padding: 0; }
+#presenter { display: grid; grid-template-rows: auto 1fr auto auto; min-height: 100vh; padding: 1.5rem 2rem; gap: 1rem; position: relative; }
+#presenter header { display:flex; justify-content:space-between; align-items:center; font-size: 1.1rem; }
+#presenter .title { font-weight: 600; }
+#presenter .counter { color: #9ca3af; font-variant-numeric: tabular-nums; }
+#presenter .timer { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 2rem; color: #fbbf24; }
+.stage { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.2rem; text-align:center; padding: 1rem; }
+.prompt { font-size: clamp(1.8rem, 4.5vw, 4rem); font-weight: 700; line-height: 1.15; max-width: 90%; }
+#image-wrap img { max-height: 45vh; max-width: 80vw; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,.4); }
+.answers { display:flex; flex-wrap: wrap; gap:.6rem; justify-content:center; min-height: 3.4rem; }
+.chip { background:#1f2937; border:1px solid #374151; border-radius: 999px; padding: .55rem 1rem; font-size: 1.15rem; }
+.help { color:#6b7280; font-size: .9rem; text-align:center; }
+kbd { background:#1f2937; border:1px solid #374151; border-radius:4px; padding: 1px 6px; font-family: ui-monospace, monospace; }
+.card-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.85); display:flex; align-items:center; justify-content:center; flex-direction:column; padding: 2rem; }
+.card-overlay.hidden { display: none; }
+.card-overlay iframe { width: 80vw; height: 80vh; background: white; border: 0; border-radius: 12px; }

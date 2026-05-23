@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }} — admin{% endblock %}
+{% block content %}
+<header class="bar">
+  <h1>{{ event.title }}</h1>
+  <nav>
+    <a href="/">← events</a>
+    <a href="/event/{{ event.id }}/present" target="_blank">presenter →</a>
+  </nav>
+</header>
+
+<section class="grid">
+  <div class="stat"><b>{{ card_count }}</b> cards</div>
+  <div class="stat"><b>{{ question_count }}</b> questions</div>
+  <div class="stat"><b>{{ assignments|length }}</b> assigned</div>
+  <div class="stat">rule: <b>{{ event.win_rule }}</b></div>
+</section>
+
+<section>
+  <h2>Lookup</h2>
+  <input id="q" placeholder="search by email, name, or card-id" autocomplete="off">
+  <ul id="results"></ul>
+</section>
+
+<section>
+  <h2>Expected winners (live)</h2>
+  <p>Updates as the presenter advances. Useful for false-positive defense.</p>
+  <table id="winners"><thead><tr><th>card</th><th>won at Q</th><th>player</th></tr></thead><tbody></tbody></table>
+</section>
+
+<script>
+  const eventId = {{ event.id|tojson }};
+  const q = document.getElementById('q');
+  const results = document.getElementById('results');
+  q.addEventListener('input', async () => {
+    const r = await fetch(`/event/${eventId}/search?q=${encodeURIComponent(q.value)}`);
+    const data = await r.json();
+    results.innerHTML = data.map(a =>
+      `<li><a href="/event/${eventId}/card/${a.card_id}" target="_blank">${a.card_id}</a>
+       — ${a.email}${a.display_name ? ' (' + a.display_name + ')' : ''}
+       <a href="/event/${eventId}/card/${a.card_id}/pdf?mode=print">print.pdf</a>
+       <a href="/event/${eventId}/card/${a.card_id}/pdf?mode=fillable">fillable.pdf</a>
+       </li>`
+    ).join('');
+  });
+
+  const refreshWinners = async () => {
+    const r = await fetch(`/event/${eventId}/expected-winners`);
+    const data = await r.json();
+    const tbody = document.querySelector('#winners tbody');
+    tbody.innerHTML = data.winners.map(w =>
+      `<tr><td><a href="/event/${eventId}/card/${w.card_id}?show_answers=1" target="_blank">${w.card_id.slice(0,8)}</a></td>
+       <td>${w.won_at}</td><td>${w.email || ''} ${w.display_name || ''}</td></tr>`
+    ).join('');
+  };
+  refreshWinners();
+  const es = new EventSource(`/event/${eventId}/present/stream`);
+  es.onmessage = refreshWinners;
+</script>
+{% endblock %}

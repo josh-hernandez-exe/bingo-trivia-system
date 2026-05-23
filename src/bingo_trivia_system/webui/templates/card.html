@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Card {{ card.id }}{% endblock %}
+{% block content %}
+<header class="bar">
+  <h1>{{ event.title }}</h1>
+  <nav>
+    {% if show_answers %}
+      <a href="?show_answers=0">hide answers</a>
+    {% else %}
+      <a href="?show_answers=1">show answers</a>
+    {% endif %}
+    <a href="/event/{{ event.id }}/card/{{ card.id }}/pdf?mode=print">print.pdf</a>
+    <a href="/event/{{ event.id }}/card/{{ card.id }}/pdf?mode=fillable">fillable.pdf</a>
+  </nav>
+</header>
+<p class="meta">Card ID: <code>{{ card.id }}</code>
+  {% if assignment %}— {{ assignment.email }}{% if assignment.display_name %} ({{ assignment.display_name }}){% endif %}{% endif %}
+</p>
+<table class="bingo big">
+  {% for row in rows %}
+  <tr>
+    {% for cell in row %}
+      {% set key = loop.index0 ~ ',' ~ (loop.parent|length - (loop.parent|length - loop.index0))|string %}
+      <td>
+        <div class="text">{{ cell.text }}</div>
+        {% set rowi = loop.parent.index0 if loop.parent is defined else 0 %}
+      </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+{# Stamp overlay: render a separate absolutely-positioned layer to avoid Jinja loop-index complexity. #}
+<script>
+  const stamps = {{ stamps|tojson }};
+  const tbl = document.querySelector('table.bingo');
+  if (tbl) {
+    [...tbl.rows].forEach((tr, r) => {
+      [...tr.cells].forEach((td, c) => {
+        const k = `${r},${c}`;
+        if (stamps[k]) {
+          const s = document.createElement('div');
+          s.className = 'stamp';
+          s.textContent = stamps[k];
+          td.appendChild(s);
+        }
+      });
+    });
+  }
+</script>
+{% endblock %}
