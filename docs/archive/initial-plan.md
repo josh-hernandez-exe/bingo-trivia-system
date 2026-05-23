@@ -1,7 +1,7 @@
 # Initial Repo Plan (archived)
 
 > **Archived:** This is the original planning document that bootstrapped this
-> repository. It is preserved verbatim for historical context. **Do not edit.**
+> repository. It is preserved with light wording cleanup for public sharing.
 > Living documentation lives under [`../`](../) (see `architecture.md`,
 > `systems/`, `event-playbook.md`, etc.) and in
 > [`../../.github/copilot-instructions.md`](../../.github/copilot-instructions.md).
@@ -76,7 +76,7 @@ flowchart LR
     IMG --> SERVE
 
     SEND -.unique PDF per recipient.-> Inbox[(Participant inboxes)]
-    SERVE -.screen-share.-> Teams[(Live presentation)]
+    SERVE -.screen-share.-> Display[(Live presentation)]
 ```
 
 ---
@@ -95,10 +95,10 @@ one of them is gated behind an optional extra or a clear capability check at sta
 | Microsoft Graph email transport | ✅ | ✅ | ✅ |
 | AWS SES email transport | ✅ | ✅ | ✅ |
 | FastAPI web UI (`bts serve`) | ✅ binds `127.0.0.1` | ✅ via SSH port-forward | ✅ Codespaces auto-forwards port |
-| Live presenter screen-share | ✅ run locally during meeting | ⚠️ adds SSH-tunnel latency | ✅ run from laptop's browser |
+| Live presenter display | ✅ run locally during event | ⚠️ adds SSH-tunnel latency | ✅ run from laptop's browser |
 
 **Operational rule**: the event-day machine **should be your local laptop** so the
-presenter UI has zero network latency for keyboard events and SSE. EC2 and
+presenter UI has zero network latency for keyboard events and SSE. Cloud VMs and
 Codespaces are best for batch work — card generation, PDF rendering, simulation runs.
 
 ---
