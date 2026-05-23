@@ -1,0 +1,11 @@
+id: example-shapes-and-colors
+title: "Shapes & Colors Bingo (Demo Event)"
+num_cards: 30
+win_rule: line
+seed: 42
+default_timer_seconds: 45
+tier_distribution:
+  easy: 0.55
+  medium: 0.30
+  hard: 0.15
+max_hard_cells: 5

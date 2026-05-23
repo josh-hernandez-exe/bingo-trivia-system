@@ -1,0 +1,97 @@
+{
+  "$defs": {
+    "Question": {
+      "additionalProperties": false,
+      "description": "A single trivia question with one or more accepted answers.",
+      "properties": {
+        "index": {
+          "minimum": 1,
+          "title": "Index",
+          "type": "integer"
+        },
+        "prompt": {
+          "title": "Prompt",
+          "type": "string"
+        },
+        "answer_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Answer Ids",
+          "type": "array"
+        },
+        "image": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Image"
+        },
+        "image_caption": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Image Caption"
+        },
+        "timer_seconds": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timer Seconds"
+        },
+        "speaker_notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Speaker Notes"
+        }
+      },
+      "required": [
+        "index",
+        "prompt",
+        "answer_ids"
+      ],
+      "title": "Question",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "questions": {
+      "items": {
+        "$ref": "#/$defs/Question"
+      },
+      "title": "Questions",
+      "type": "array"
+    }
+  },
+  "required": [
+    "questions"
+  ],
+  "title": "QuestionSet",
+  "type": "object"
+}

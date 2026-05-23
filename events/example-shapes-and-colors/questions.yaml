@@ -1,0 +1,38 @@
+# Demo question set.
+# A few questions have multi-answer groups to exercise the N-1/N-2 stamping.
+questions:
+  - { index: 1,  prompt: "A color of fire trucks",        answer_ids: [red] }
+  - { index: 2,  prompt: "Shape with three sides",        answer_ids: [triangle] }
+  - { index: 3,  prompt: "Color of a clear daytime sky",  answer_ids: [blue] }
+  - { index: 4,  prompt: "Shape with four equal sides at right angles", answer_ids: [square] }
+  - { index: 5,  prompt: "Color of grass",                answer_ids: [green] }
+  - { index: 6,  prompt: "Shape of a stop sign",          answer_ids: [octagon] }
+  - { index: 7,  prompt: "Colors used on the Pride flag (any two)", answer_ids: [red, orange, yellow, green, blue, purple, pink] }
+  - { index: 8,  prompt: "Shape with five sides",         answer_ids: [pentagon] }
+  - { index: 9,  prompt: "Color of bananas",              answer_ids: [yellow] }
+  - { index: 10, prompt: "Shape with six sides",          answer_ids: [hexagon] }
+  - { index: 11, prompt: "Color of eggplants",            answer_ids: [purple] }
+  - { index: 12, prompt: "Shape of a basketball",         answer_ids: [circle] }
+  - { index: 13, prompt: "Color of midnight",             answer_ids: [black, navy] }
+  - { index: 14, prompt: "Shape used on a typical playing card for ♦", answer_ids: [diamond] }
+  - { index: 15, prompt: "Color between red and yellow",  answer_ids: [orange] }
+  - { index: 16, prompt: "Shape of the Earth",            answer_ids: [oval, circle, ellipsoid] }
+  - { index: 17, prompt: "Color of charcoal",             answer_ids: [black] }
+  - { index: 18, prompt: "Color of cotton candy (classic)",   answer_ids: [pink] }
+  - { index: 19, prompt: "Shape of the moon at first-quarter",answer_ids: [crescent] }
+  - { index: 20, prompt: "Color of a fresh pumpkin",      answer_ids: [orange] }
+  - { index: 21, prompt: "Shape with twelve sides",       answer_ids: [dodecagon] }
+  - { index: 22, prompt: "Color of teak wood",            answer_ids: [brown] }
+  - { index: 23, prompt: "Color similar to turquoise",    answer_ids: [teal, cyan] }
+  - { index: 24, prompt: "A famous heart-shape color",    answer_ids: [red, pink] }
+  - { index: 25, prompt: "Shape: parallelogram with all sides equal", answer_ids: [rhombus] }
+  - { index: 26, prompt: "Yellow-green color",            answer_ids: [chartreuse] }
+  - { index: 27, prompt: "Bright reddish-orange pigment", answer_ids: [vermilion] }
+  - { index: 28, prompt: "Mustard-like earth pigment",    answer_ids: [ochre] }
+  - { index: 29, prompt: "Color of fresh snow",           answer_ids: [white] }
+  - { index: 30, prompt: "Five-pointed sky symbol",       answer_ids: [star] }
+  - { index: 31, prompt: "Bluish-red between pink and purple", answer_ids: [magenta] }
+  - { index: 32, prompt: "Color of a wine stain",         answer_ids: [maroon] }
+  - { index: 33, prompt: "Shape with a flat top and slanted sides", answer_ids: [trapezoid] }
+  - { index: 34, prompt: "Generic quadrilateral with two parallel-side pairs", answer_ids: [parallelo] }
+  - { index: 35, prompt: "Love symbol shape",             answer_ids: [heart] }

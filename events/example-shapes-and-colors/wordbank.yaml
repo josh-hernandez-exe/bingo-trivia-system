@@ -1,0 +1,42 @@
+# Demo word bank. All entries are made-up shape/color trivia answers.
+# Tiers: easy (most common on cards), medium, hard.
+entries:
+  # ---- EASY (16) ----
+  - { id: red,       text: "Red",       tier: easy, is_answer: true }
+  - { id: blue,      text: "Blue",      tier: easy, is_answer: true }
+  - { id: green,     text: "Green",     tier: easy, is_answer: true }
+  - { id: yellow,    text: "Yellow",    tier: easy, is_answer: true }
+  - { id: orange,    text: "Orange",    tier: easy, is_answer: true }
+  - { id: purple,    text: "Purple",    tier: easy, is_answer: true }
+  - { id: black,     text: "Black",     tier: easy, is_answer: true }
+  - { id: white,     text: "White",     tier: easy, is_answer: true }
+  - { id: pink,      text: "Pink",      tier: easy, is_answer: true }
+  - { id: brown,     text: "Brown",     tier: easy, is_answer: true }
+  - { id: circle,    text: "Circle",    tier: easy, is_answer: true }
+  - { id: square,    text: "Square",    tier: easy, is_answer: true }
+  - { id: triangle,  text: "Triangle",  tier: easy, is_answer: true }
+  - { id: star,      text: "Star",      tier: easy, is_answer: true }
+  - { id: heart,     text: "Heart",     tier: easy, is_answer: true }
+  - { id: diamond,   text: "Diamond",   tier: easy, is_answer: true }
+
+  # ---- MEDIUM (10) ----
+  - { id: hexagon,   text: "Hexagon",   tier: medium, is_answer: true }
+  - { id: pentagon,  text: "Pentagon",  tier: medium, is_answer: true }
+  - { id: octagon,   text: "Octagon",   tier: medium, is_answer: true }
+  - { id: oval,      text: "Oval",      tier: medium, is_answer: true }
+  - { id: crescent,  text: "Crescent",  tier: medium, is_answer: true }
+  - { id: teal,      text: "Teal",      tier: medium, is_answer: true }
+  - { id: magenta,   text: "Magenta",   tier: medium, is_answer: true }
+  - { id: cyan,      text: "Cyan",      tier: medium, is_answer: true }
+  - { id: maroon,    text: "Maroon",    tier: medium, is_answer: true }
+  - { id: navy,      text: "Navy",      tier: medium, is_answer: true }
+
+  # ---- HARD (8) ----
+  - { id: rhombus,    text: "Rhombus",    tier: hard, is_answer: true }
+  - { id: trapezoid,  text: "Trapezoid",  tier: hard, is_answer: true }
+  - { id: chartreuse, text: "Chartreuse", tier: hard, is_answer: true }
+  - { id: vermilion,  text: "Vermilion",  tier: hard, is_answer: true }
+  - { id: ochre,      text: "Ochre",      tier: hard, is_answer: true }
+  - { id: dodecagon,  text: "Dodecagon",  tier: hard, is_answer: true }
+  - { id: ellipsoid,  text: "Ellipsoid",  tier: hard, is_answer: true }
+  - { id: parallelo,  text: "Parallelogram", tier: hard, is_answer: true }

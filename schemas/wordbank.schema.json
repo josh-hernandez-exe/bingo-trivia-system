@@ -1,0 +1,74 @@
+{
+  "$defs": {
+    "Tier": {
+      "description": "Difficulty tier for a word-bank entry.",
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "title": "Tier",
+      "type": "string"
+    },
+    "WordBankEntry": {
+      "additionalProperties": false,
+      "description": "A single cell candidate from the word bank.\n\nEntries with `is_answer = True` may be the correct response to one or\nmore questions. Entries that share a `group_id` are alternative valid\nanswers to the same question (renders as `N-1`, `N-2`, \u2026).",
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "is_answer": {
+          "default": false,
+          "title": "Is Answer",
+          "type": "boolean"
+        },
+        "group_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Group Id"
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "tier"
+      ],
+      "title": "WordBankEntry",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Collection of word-bank entries used to generate cards.",
+  "properties": {
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/WordBankEntry"
+      },
+      "title": "Entries",
+      "type": "array"
+    }
+  },
+  "required": [
+    "entries"
+  ],
+  "title": "WordBank",
+  "type": "object"
+}

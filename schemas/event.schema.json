@@ -1,0 +1,107 @@
+{
+  "$defs": {
+    "TierDistribution": {
+      "additionalProperties": false,
+      "description": "Target ratios for each tier on a single card. Must sum to 1.0.",
+      "properties": {
+        "easy": {
+          "default": 0.55,
+          "title": "Easy",
+          "type": "number"
+        },
+        "medium": {
+          "default": 0.3,
+          "title": "Medium",
+          "type": "number"
+        },
+        "hard": {
+          "default": 0.15,
+          "title": "Hard",
+          "type": "number"
+        }
+      },
+      "title": "TierDistribution",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Top-level configuration for one event (real or dry-run).",
+  "properties": {
+    "id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "starts_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Starts At"
+    },
+    "num_cards": {
+      "default": 50,
+      "minimum": 1,
+      "title": "Num Cards",
+      "type": "integer"
+    },
+    "win_rule": {
+      "default": "line",
+      "enum": [
+        "line",
+        "blackout",
+        "corners",
+        "x_pattern",
+        "two_lines"
+      ],
+      "title": "Win Rule",
+      "type": "string"
+    },
+    "tier_distribution": {
+      "$ref": "#/$defs/TierDistribution"
+    },
+    "seed": {
+      "default": 42,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "default_timer_seconds": {
+      "default": 60,
+      "title": "Default Timer Seconds",
+      "type": "integer"
+    },
+    "theme": {
+      "default": "default",
+      "title": "Theme",
+      "type": "string"
+    },
+    "max_hard_cells": {
+      "default": 5,
+      "title": "Max Hard Cells",
+      "type": "integer"
+    },
+    "min_answer_coverage": {
+      "default": 0.0,
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Min Answer Coverage",
+      "type": "number"
+    }
+  },
+  "required": [
+    "id",
+    "title"
+  ],
+  "title": "EventConfig",
+  "type": "object"
+}
