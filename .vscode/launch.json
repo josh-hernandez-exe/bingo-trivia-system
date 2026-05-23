@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "bts serve (example)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "bingo_trivia_system.cli",
+      "args": ["serve", "--event", "example-shapes-and-colors"],
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+    {
+      "name": "pytest current file",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["-q", "${file}"],
+      "console": "integratedTerminal"
+    }
+  ]
+}
