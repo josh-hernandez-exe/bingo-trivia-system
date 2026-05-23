@@ -1,0 +1,49 @@
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.codegraph/
+
+# Build
+build/
+dist/
+
+# Editor
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / env
+.env
+.env.local
+
+# Event data — real participant rosters and PDFs must never be committed.
+# The bundled sample event is whitelisted below.
+events/*
+!events/example-*/
+
+# Within whitelisted sample events, still exclude generated outputs.
+events/example-*/cards/*.json
+events/example-*/cards/pdf/
+events/example-*/assignments.json
+events/example-*/runs/
+events/example-*/slides/
+
+# uv lockfile is committed; nothing to ignore there.
