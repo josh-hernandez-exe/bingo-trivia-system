@@ -91,7 +91,7 @@ one of them is gated behind an optional extra or a clear capability check at sta
 | `bts` CLI (cards, simulate, roster, send, serve) | ✅ via `uv` | ✅ via `uv` | ✅ via `uv` |
 | ReportLab PDF backend | ✅ default | ✅ | ✅ |
 | WeasyPrint PDF backend | ⚠️ needs GTK runtime + PATH munging — **not recommended** | ✅ native | ✅ pre-baked in image |
-| Beamer slide backend (`tectonic`) | ✅ single-binary download | ✅ single-binary download | ✅ pre-baked in image |
+| Beamer slide backend (`tectonic`) | ✅ single-binary download | ✅ single-binary download | ✅ installed on create |
 | Microsoft Graph email transport | ✅ | ✅ | ✅ |
 | AWS SES email transport | ✅ | ✅ | ✅ |
 | FastAPI web UI (`bts serve`) | ✅ binds `127.0.0.1` | ✅ via SSH port-forward | ✅ Codespaces auto-forwards port |

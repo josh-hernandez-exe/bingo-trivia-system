@@ -37,7 +37,9 @@ Open the folder in VS Code → command palette → **Reopen in Container**.
 Or click **Create Codespace** on GitHub.
 
 `postCreateCommand` runs `uv sync --all-extras` automatically and
-`forwardPorts: [8765]` exposes the presenter UI.
+`forwardPorts: [8765]` exposes the presenter UI. In the devcontainer,
+post-create also installs CodeGraph and Tectonic so repo indexing and the
+Beamer PDF fallback work without manual setup.
 
 ## Capability matrix
 
@@ -46,7 +48,7 @@ Or click **Create Codespace** on GitHub.
 | `bts` CLI | ✅ | ✅ | ✅ |
 | ReportLab PDF | ✅ | ✅ | ✅ |
 | WeasyPrint PDF | ⚠️ GTK | ✅ | ✅ |
-| Beamer (`tectonic`) | ✅ single binary | ✅ single binary | ✅ pre-baked |
+| Beamer (`tectonic`) | ✅ single binary | ✅ single binary | ✅ installed on create |
 | Microsoft Graph | ✅ | ✅ | ✅ |
 | AWS SES | ✅ | ✅ | ✅ |
 | `bts serve` | ✅ | ✅ via port-forward | ✅ auto-forwarded |
