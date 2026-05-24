@@ -15,6 +15,11 @@ repos:
         args: [--maxkb=1024]
   - repo: local
     hooks:
+      - id: codegraph-sync
+        name: Update CodeGraph index
+        entry: bash scripts/codegraph-sync.sh --quiet
+        language: system
+        pass_filenames: false
       - id: sync-ai-instructions
         name: Sync AI instruction mirrors
         entry: bash scripts/sync-ai-instructions.sh

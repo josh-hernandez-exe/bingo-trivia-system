@@ -3,9 +3,13 @@
   "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {},
-    "ghcr.io/va-h/devcontainers-features/uv:1": {}
+    "ghcr.io/va-h/devcontainers-features/uv:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
   },
-  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends libpango-1.0-0 libpangoft2-1.0-0 libcairo2 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info fonts-dejavu && uv sync --all-extras",
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
   "forwardPorts": [8765],
   "portsAttributes": {
     "8765": {
@@ -21,12 +25,16 @@
         "tamasfe.even-better-toml",
         "redhat.vscode-yaml",
         "github.copilot",
-        "github.copilot-chat"
+        "github.copilot-chat",
+        "github.vscode-github-actions"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/workspaces/bingo-trivia-system/.venv/bin/python"
       }
     }
+  },
+  "containerEnv": {
+    "EVENT_DEFAULT": "example-shapes-and-colors"
   },
   "remoteUser": "vscode"
 }
