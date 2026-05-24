@@ -1,17 +1,17 @@
 \documentclass[aspectratio=169]{beamer}
 \usetheme{metropolis}
 \usepackage{graphicx}
-\title{ {{- event.title -}} }
-\subtitle{ {{- variant -}} }
+{{ tex_backslash }}title{ {{- event.title | tex_escape -}} }
+\subtitle{ {{- variant | tex_escape -}} }
 \begin{document}
 \maketitle
 {% for q in questions %}
 \begin{frame}{Question {{ q.index }}}
-  {\Large {{ q.prompt }}}
+  {\Large {{ q.prompt | tex_escape }}}
   {% if q.image %}\begin{center}\includegraphics[height=0.5\textheight]{ {{- q.image -}} }\end{center}{% endif %}
   {% if variant == 'answers' %}
   \begin{itemize}
-    {% for a in q.answers %}\item {% if q.answers|length > 1 %}{{ q.index }}-{{ loop.index }} · {% else %}{{ q.index }} · {% endif %}{{ a }}{% endfor %}
+    {% for a in q.answers %}\item {% if q.answers|length > 1 %}{{ q.index }}-{{ loop.index }} · {% else %}{{ q.index }} · {% endif %}{{ a | tex_escape }}{% endfor %}
   \end{itemize}
   {% endif %}
 \end{frame}

@@ -20,13 +20,31 @@ Backend = Literal["reveal", "beamer"]
 Variant = Literal["questions", "answers"]
 
 
+def _latex_escape(value: object) -> str:
+    text = str(value)
+    text = text.replace("\\", r"\textbackslash{}")
+    text = text.replace("&", r"\&")
+    text = text.replace("%", r"\%")
+    text = text.replace("$", r"\$")
+    text = text.replace("#", r"\#")
+    text = text.replace("_", r"\_")
+    text = text.replace("{", r"\{")
+    text = text.replace("}", r"\}")
+    text = text.replace("~", r"\textasciitilde{}")
+    text = text.replace("^", r"\textasciicircum{}")
+    return text
+
+
 def _env() -> Environment:
-    return Environment(
+    env = Environment(
         loader=FileSystemLoader(TEMPLATE_DIR),
         autoescape=select_autoescape(["html"]),
         trim_blocks=True,
         lstrip_blocks=True,
     )
+    env.globals["tex_backslash"] = "\\"
+    env.filters["tex_escape"] = _latex_escape
+    return env
 
 
 def build_slides(
