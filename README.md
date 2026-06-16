@@ -95,6 +95,7 @@ Copy `.env.example` → `.env` and fill in what you need:
 - [Architecture](docs/architecture.md)
 - [Event playbook (T-14d → T-0)](docs/event-playbook.md)
 - [Authoring questions](docs/authoring-questions.md)
+- [Simulation planning report](docs/simulation-planning-report.md)
 - [Email setup](docs/email-setup.md)
 - [Presenter mode](docs/presenter-mode.md)
 - [Systems reference](docs/systems/)
