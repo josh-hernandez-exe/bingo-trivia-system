@@ -64,6 +64,10 @@ def test_send_attaches_only_fillable_pdf(tmp_path, monkeypatch):
     )
 
     assert len(sent) == 1
+    assert "attached as a fillable PDF" in sent[0]["html"]
+    assert "Print the attached PDF" in sent[0]["html"]
+    assert "Microsoft Edge or Adobe Acrobat" in sent[0]["html"]
+    assert "tick the fillable checkboxes" in sent[0]["html"]
     attachments = sent[0]["attachments"]
     assert [attachment.filename for attachment in attachments] == [f"{card_id}.fillable.pdf"]
     assert attachments[0].content == b"fillable pdf"
