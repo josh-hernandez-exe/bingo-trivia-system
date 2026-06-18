@@ -34,9 +34,15 @@ Every `bts send` run writes `events/<id>/runs/send-<ts>.jsonl`. The next run
 inspects the latest log and skips anyone already marked `ok: true`. Pass
 `--force` to bypass.
 
+## Attachments
+
+`bts cards render --mode both` writes print and fillable PDFs, but `bts send`
+attaches only `<card-id>.fillable.pdf`. The fillable/checkmark PDF can be opened
+in Adobe-compatible viewers and can still be printed by participants.
+
 ## Attachment size
 
-Graph's "simple" `sendMail` caps at ~3 MB. The transport refuses attachments
+Graph's "simple" `sendMail` caps at ~3 MB. The transport refuses an attachment
 larger than 2.5 MB so failures surface before hitting the API.
 
 ## Privacy

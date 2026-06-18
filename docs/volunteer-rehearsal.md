@@ -158,8 +158,7 @@ Check the inbox for:
 
 - subject line
 - readable HTML body
-- one print PDF attachment
-- one fillable PDF attachment
+- one fillable/checkmark PDF attachment
 - card id visible in the email and matching the PDF filename
 
 ## Send to all volunteers
@@ -173,8 +172,8 @@ uv run bts send --transport ses --force --subject "Volunteer bingo rehearsal"
 Ask volunteers to reply with:
 
 - whether they received exactly one email
-- whether both PDFs opened
-- whether the fillable PDF accepted marks/checks
+- whether the attached PDF opened
+- whether the PDF accepted marks/checks in Adobe or another fillable-PDF viewer
 - whether the display name and card id looked right
 
 The send command is resumable. If a later run should skip already-successful

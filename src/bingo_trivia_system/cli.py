@@ -280,11 +280,10 @@ def send(
             if a.email.lower() in sent_emails:
                 continue
             atts: list[Attachment] = []
-            for m in ("print", "fillable"):
-                p = paths.cards_pdf_dir / f"{a.card_id}.{m}.pdf"
-                if not p.exists():
-                    console.print(f"[yellow]missing PDF: {p}[/]")
-                    continue
+            p = paths.cards_pdf_dir / f"{a.card_id}.fillable.pdf"
+            if not p.exists():
+                console.print(f"[yellow]missing PDF: {p}[/]")
+            else:
                 atts.append(Attachment(filename=p.name, content=p.read_bytes()))
             html = tpl.render(event=cfg, card_id=str(a.card_id), display_name=a.display_name)
             result = tx.send(a.email, subject, html, atts)

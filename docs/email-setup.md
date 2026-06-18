@@ -45,4 +45,4 @@ bts send --transport graph --only you@yourdomain.com
 bts send --transport ses   --only you@yourdomain.com
 ```
 
-Both emails should render identically and contain the same PDF attachments.
+Both emails should render identically and contain the same fillable PDF attachment.
