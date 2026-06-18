@@ -19,11 +19,15 @@ and even the sample event ignores generated outputs.
 
 Good local-only files on the work machine:
 
-- `events/<rehearsal-id>/roster.csv`
-- `events/<rehearsal-id>/assignments.json`
-- `events/<rehearsal-id>/cards/`
-- `events/<rehearsal-id>/runs/`
+- `events/volunteer-shapes-and-colors/roster.csv`
+- `events/volunteer-shapes-and-colors/assignments.json`
+- `events/volunteer-shapes-and-colors/cards/`
+- `events/volunteer-shapes-and-colors/runs/`
 - `.env`
+
+Do not replace `events/example-shapes-and-colors/roster.csv` with real volunteer
+addresses. That sample roster is tracked. Clone the sample event into a local
+ignored event and edit the clone instead.
 
 ## Prepare this repo
 
@@ -57,24 +61,25 @@ uv sync --all-extras
 uv run bts doctor
 ```
 
-Create a local rehearsal event from the sample event. Pick an event id that makes
-it obvious the data is a rehearsal.
+Create a local rehearsal event from the sample shapes-and-colors event. This uses
+the sample word bank and questions while keeping volunteer data out of tracked
+files.
 
 ```bash
-uv run bts event clone example-shapes-and-colors volunteer-rehearsal
-export EVENT_DEFAULT=volunteer-rehearsal
+uv run bts event clone example-shapes-and-colors volunteer-shapes-and-colors
+export EVENT_DEFAULT=volunteer-shapes-and-colors
 ```
 
 Edit these local files for the rehearsal:
 
-- `events/volunteer-rehearsal/event.yaml`: set title, start time, `num_cards`,
+- `events/volunteer-shapes-and-colors/event.yaml`: set title, start time, `num_cards`,
   and seed. Set `num_cards` to at least the number of volunteers plus a small
-  buffer.
-- `events/volunteer-rehearsal/wordbank.yaml`: keep the sample for a pure systems
-  test, or replace it with the real event word bank if you want content feedback.
-- `events/volunteer-rehearsal/questions.yaml`: keep the sample for a pure systems
-  test, or use a short version of the real question set.
-- `events/volunteer-rehearsal/roster.csv`: include only volunteers.
+  buffer. The sample starts at `num_cards: 30`.
+- `events/volunteer-shapes-and-colors/wordbank.yaml`: leave the sample content
+  in place for the shapes-and-colors rehearsal.
+- `events/volunteer-shapes-and-colors/questions.yaml`: leave the sample content
+  in place for the shapes-and-colors rehearsal.
+- `events/volunteer-shapes-and-colors/roster.csv`: include only volunteers.
 
 Roster format:
 
@@ -109,7 +114,7 @@ The dry run writes the same send log shape as a real send but never contacts an
 email provider.
 
 ```bash
-uv run bts send --transport graph --dry-run --subject "Volunteer bingo rehearsal"
+uv run bts send --transport ses --dry-run --subject "Volunteer bingo rehearsal"
 tail -n 20 events/$EVENT_DEFAULT/runs/send-*.jsonl
 ```
 
@@ -117,18 +122,36 @@ Confirm every volunteer has an `ok: true` row with transport `dry-run`.
 
 ## Send one real email first
 
-Configure one transport on the work machine. For Microsoft Graph, create `.env`
-with:
+The email transport for this path is AWS SES. The CLI command is `ses` because it
+sends email through Simple Email Service, not SMS/text messages.
+
+If you are using the devcontainer on the work machine, it mounts the host AWS CLI
+configuration from `${HOME}/.aws` into `/home/vscode/.aws` inside the container.
+If your work machine uses AWS SSO, refresh the SSO login on the host before
+opening or rebuilding the container because the mount is read-only.
+
+Create `.env` or export these variables in the terminal:
 
 ```bash
-GRAPH_TENANT_ID=...
-GRAPH_CLIENT_ID=...
+AWS_PROFILE=default        # or the profile with SES permissions
+AWS_REGION=us-east-1       # or your SES region
+SES_FROM_ADDR=trivia@company.example
+```
+
+Check that boto3 can see your AWS identity from inside the container:
+
+```bash
+uv run python - <<'PY'
+import boto3
+
+print(boto3.client("sts").get_caller_identity()["Arn"])
+PY
 ```
 
 Then send to yourself or one volunteer first:
 
 ```bash
-uv run bts send --transport graph --only you@company.example --force --subject "Volunteer bingo rehearsal"
+uv run bts send --transport ses --only you@company.example --force --subject "Volunteer bingo rehearsal"
 ```
 
 Check the inbox for:
@@ -144,7 +167,7 @@ Check the inbox for:
 When the single-recipient check passes:
 
 ```bash
-uv run bts send --transport graph --force --subject "Volunteer bingo rehearsal"
+uv run bts send --transport ses --force --subject "Volunteer bingo rehearsal"
 ```
 
 Ask volunteers to reply with:
