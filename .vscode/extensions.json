@@ -4,6 +4,7 @@
     "charliermarsh.ruff",
     "tamasfe.even-better-toml",
     "redhat.vscode-yaml",
+    "adamraichu.pdf-viewer",
     "ms-azuretools.vscode-docker",
     "github.vscode-github-actions",
     "github.copilot",

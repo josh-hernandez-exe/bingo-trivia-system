@@ -26,6 +26,7 @@
         "charliermarsh.ruff",
         "tamasfe.even-better-toml",
         "redhat.vscode-yaml",
+        "adamraichu.pdf-viewer",
         "github.copilot",
         "github.copilot-chat",
         "github.vscode-github-actions"
