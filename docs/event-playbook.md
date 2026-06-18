@@ -16,8 +16,10 @@ A printable checklist for the two weeks before your event.
 - `bts cards generate` and `bts simulate --runs 100 --error-rate 0.07`.
   Target: median winner ≤ 25, p10 ≥ 12, P(no winner inside max-questions) < 15%.
   Adjust tier distribution / question count if not.
-- Clone the event with `bts event clone --from real-event --to dryrun-real-event`.
+- Clone the event with `bts event clone real-event dryrun-real-event`.
 - Send dry-run emails to 3-5 willing testers; have them walk the presenter UI.
+  Use the [volunteer rehearsal](volunteer-rehearsal.md) checklist for the
+  pull-only work-machine flow.
 
 ## T-3d — Freeze
 

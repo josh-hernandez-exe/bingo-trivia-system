@@ -3,7 +3,6 @@
   "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {},
-    "ghcr.io/va-h/devcontainers-features/uv:1": {},
     "ghcr.io/devcontainers/features/node:1": {
       "version": "lts"
     }

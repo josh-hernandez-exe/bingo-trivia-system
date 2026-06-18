@@ -3,6 +3,8 @@ set -euo pipefail
 
 sudo apt-get update
 sudo apt-get install -y --no-install-recommends \
+  ca-certificates \
+  curl \
   libpango-1.0-0 \
   libpangoft2-1.0-0 \
   libcairo2 \
@@ -10,6 +12,14 @@ sudo apt-get install -y --no-install-recommends \
   libffi-dev \
   shared-mime-info \
   fonts-dejavu
+
+export PATH="$HOME/.local/bin:$PATH"
+if ! command -v uv >/dev/null 2>&1; then
+  tmp_uv_install="$(mktemp)"
+  curl -LsSf https://astral.sh/uv/install.sh -o "$tmp_uv_install"
+  sh "$tmp_uv_install"
+  rm "$tmp_uv_install"
+fi
 
 uv sync --all-extras
 

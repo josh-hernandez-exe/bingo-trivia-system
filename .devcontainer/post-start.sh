@@ -2,6 +2,7 @@
 set -euo pipefail
 
 cd /workspaces/bingo-trivia-system
+export PATH="$HOME/.local/bin:$PATH"
 
 # Ensure the virtual environment exists if the workspace was freshly attached.
 if [[ ! -x .venv/bin/python ]]; then

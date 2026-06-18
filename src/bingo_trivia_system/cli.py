@@ -16,6 +16,7 @@ from typing import Annotated
 
 import typer
 import yaml
+from pydantic import BaseModel
 from rich.console import Console
 from rich.table import Table
 
@@ -401,7 +402,7 @@ def docs_check() -> None:
 @schemas_app.command("export")
 def schemas_export(out_dir: Path = Path("schemas")) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
-    pairs = {
+    pairs: dict[str, type[BaseModel]] = {
         "event.schema.json": EventConfig,
         "wordbank.schema.json": WordBank,
         "questions.schema.json": QuestionSet,
