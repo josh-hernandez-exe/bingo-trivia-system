@@ -142,7 +142,6 @@ def cards_generate(
 def cards_render(
     event: EventOpt = None,
     backend: str = typer.Option("reportlab", "--backend"),
-    mode: str = typer.Option("both", "--mode", help="print | fillable | both"),
 ) -> None:
     paths = event_paths(event)
     paths.ensure_dirs()
@@ -150,13 +149,13 @@ def cards_render(
     wordbank = wb_mod.load_wordbank(paths.wordbank_yaml)
     cards = cards_mod.read_cards(paths.cards_dir)
     renderer = get_renderer(backend)
-    modes = ("print", "fillable") if mode == "both" else (mode,)
+    for old in paths.cards_pdf_dir.glob("*.pdf"):
+        old.unlink()
     for c in cards:
-        for m in modes:
-            pdf = renderer.render(c, wordbank, cfg, mode=m)  # type: ignore[arg-type]
-            out = paths.cards_pdf_dir / f"{c.id}.{m}.pdf"
-            out.write_bytes(pdf)
-    console.print(f"[green]✓[/] rendered {len(cards) * len(modes)} PDFs to {paths.cards_pdf_dir}")
+        pdf = renderer.render(c, wordbank, cfg, mode="fillable")
+        out = paths.cards_pdf_dir / f"{c.id}.fillable.pdf"
+        out.write_bytes(pdf)
+    console.print(f"[green]✓[/] rendered {len(cards)} PDFs to {paths.cards_pdf_dir}")
 
 
 # ---- simulate -----------------------------------------------------------
@@ -254,8 +253,12 @@ def send(
     if not assignments.assignments:
         raise typer.BadParameter("no assignments — run `bts roster assign` first")
 
-    template_dir = Path(__file__).parent / "email" / "templates"
-    env = Environment(loader=FileSystemLoader(template_dir), autoescape=select_autoescape(["html"]))
+    packaged_template_dir = Path(__file__).parent / "email" / "templates"
+    event_template_dir = paths.root / "email"
+    env = Environment(
+        loader=FileSystemLoader([event_template_dir, packaged_template_dir]),
+        autoescape=select_autoescape(["html"]),
+    )
     tpl = env.get_template("invite.html.j2")
 
     tname = "dry-run" if dry_run else transport

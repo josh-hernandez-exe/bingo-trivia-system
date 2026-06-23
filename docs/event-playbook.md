@@ -25,7 +25,7 @@ A printable checklist for the two weeks before your event.
 
 - Final pass on questions + word bank.
 - `bts cards generate` (real event) — note the seed in the event yaml.
-- `bts cards render --mode both` to produce print + fillable PDFs.
+- `bts cards render` to produce one printable fillable PDF per card.
 - `bts slides build` to generate the Reveal.js backup deck.
 
 ## T-1d — Send

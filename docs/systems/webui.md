@@ -20,7 +20,7 @@ Started via `bts serve --event <id>` (or `EVENT_DEFAULT` env var). Binds
 | `GET /event/<id>` | Admin dashboard |
 | `GET /event/<id>/search?q=` | Search by email / name / card-id |
 | `GET /event/<id>/card/<card-id>?show_answers=0\|1` | Render card mirror with optional stamps |
-| `GET /event/<id>/card/<card-id>/pdf?mode=print\|fillable` | Download PDF |
+| `GET /event/<id>/card/<card-id>/pdf` | Download fillable PDF |
 | `GET /event/<id>/expected-winners` | Cards that should have won by the current question |
 | `GET /event/<id>/present/preflight` | Static validation pass (missing images / orphan answers) |
 

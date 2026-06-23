@@ -36,9 +36,21 @@ inspects the latest log and skips anyone already marked `ok: true`. Pass
 
 ## Attachments
 
-`bts cards render --mode both` writes print and fillable PDFs, but `bts send`
-attaches only `<card-id>.fillable.pdf`. The fillable/checkmark PDF can be opened
-in Adobe-compatible viewers and can still be printed by participants.
+`bts cards render` writes one `<card-id>.fillable.pdf` per card, and `bts send`
+attaches that file. The fillable/checkmark PDF can be opened in Adobe-compatible
+viewers and can still be printed by participants.
+
+## Template Override
+
+The packaged invite template is used by default. To customize the email body for
+one event, create:
+
+```text
+events/<id>/email/invite.html.j2
+```
+
+That template receives `event`, `card_id`, and `display_name`. The CLI `--subject`
+option still controls the email subject.
 
 ## Attachment size
 

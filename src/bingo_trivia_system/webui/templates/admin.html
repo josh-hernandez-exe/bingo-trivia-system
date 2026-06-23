@@ -38,8 +38,7 @@
     results.innerHTML = data.map(a =>
       `<li><a href="/event/${eventId}/card/${a.card_id}" target="_blank">${a.card_id}</a>
        — ${a.email}${a.display_name ? ' (' + a.display_name + ')' : ''}
-       <a href="/event/${eventId}/card/${a.card_id}/pdf?mode=print">print.pdf</a>
-       <a href="/event/${eventId}/card/${a.card_id}/pdf?mode=fillable">fillable.pdf</a>
+       <a href="/event/${eventId}/card/${a.card_id}/pdf">fillable.pdf</a>
        </li>`
     ).join('');
   });

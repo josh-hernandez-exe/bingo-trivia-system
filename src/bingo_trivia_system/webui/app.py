@@ -117,15 +117,13 @@ def create_app() -> FastAPI:
         )
 
     @app.get("/event/{event_id}/card/{card_id}/pdf")
-    async def card_pdf(
-        event_id: str, card_id: str, mode: str = "print", backend: str = "reportlab"
-    ) -> Response:
+    async def card_pdf(event_id: str, card_id: str, backend: str = "reportlab") -> Response:
         ctx = _ctx(event_id)
         card = next((c for c in ctx["cards"] if str(c.id) == card_id), None)
         if card is None:
             raise HTTPException(404)
         renderer = get_renderer(backend)
-        pdf = renderer.render(card, ctx["wordbank"], ctx["event"], mode=mode)  # type: ignore[arg-type]
+        pdf = renderer.render(card, ctx["wordbank"], ctx["event"], mode="fillable")
         return Response(content=pdf, media_type="application/pdf")
 
     @app.get("/event/{event_id}/search")
@@ -160,7 +158,7 @@ def create_app() -> FastAPI:
         )
         assignments = ctx["assignments"]
         out = []
-        for card_id, q_idx in winners[:25]:
+        for card_id, q_idx in winners:
             a = assignments.by_card_id(card_id)
             out.append(
                 {

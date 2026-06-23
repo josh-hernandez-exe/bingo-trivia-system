@@ -94,7 +94,7 @@ person.two@company.example,Person Two
 ```bash
 uv run bts cards generate
 uv run bts simulate --runs 100 --error-rate 0.07
-uv run bts cards render --mode both
+uv run bts cards render
 uv run bts roster assign
 ```
 
@@ -105,8 +105,8 @@ find events/$EVENT_DEFAULT/cards/pdf -maxdepth 1 -type f | sort | head
 find events/$EVENT_DEFAULT/cards/pdf -maxdepth 1 -type f | wc -l
 ```
 
-Expected PDF count is `num_cards * 2` because each card has print and fillable
-versions.
+Expected PDF count is `num_cards`; each card has one fillable PDF, and that file
+can also be printed.
 
 ## Dry-run the send path
 
