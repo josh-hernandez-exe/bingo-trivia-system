@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+  <h2>{{ event.title }}</h2>
+  <p>Hi{% if display_name %} {{ display_name }}{% endif %},</p>
+
+  <p>
+    Your Shapes &amp; Colors Bingo card is attached as a fillable PDF. You can
+    print it and mark it by hand, or open it in Microsoft Edge or Adobe Acrobat
+    and tick the checkboxes during the game.
+  </p>
+
+  <p>Your card ID:</p>
+  <p style="font-family: monospace; font-size: 1.1em;">{{ card_id }}</p>
+
+  {% if event.starts_at %}<p>Event time: {{ event.starts_at }}</p>{% endif %}
+  <p>See you for the demo round!</p>
+
+  <hr>
+  <p style="color:#888;font-size:0.85em;">Sent by bingo-trivia-system · event: {{ event.id }}</p>
+</body>
+</html>
