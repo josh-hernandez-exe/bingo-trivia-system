@@ -88,9 +88,11 @@ def build_slides(
         if images_dir.exists():
             tgt = out_dir / "images"
             tgt.mkdir(exist_ok=True)
-            for img in images_dir.iterdir():
+            for img in images_dir.rglob("*"):
                 if img.is_file():
-                    shutil.copy2(img, tgt / img.name)
+                    dest = tgt / img.relative_to(images_dir)
+                    dest.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(img, dest)
         return out_file
     if backend == "beamer":
         tpl = _env().get_template("beamer/deck.tex.j2")

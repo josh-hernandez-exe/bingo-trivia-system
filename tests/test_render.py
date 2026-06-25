@@ -93,6 +93,36 @@ def test_sample_answers_include_multi_answer_and_multi_word_cases(
     )
 
 
+def test_reveal_slides_copy_nested_images(
+    sample_event, sample_wordbank, sample_questions, tmp_path
+):
+    out_dir = tmp_path / "slides"
+    images_dir = tmp_path / "images"
+    image = images_dir / "nested" / "photo.png"
+    image.parent.mkdir(parents=True)
+    image.write_bytes(b"image bytes")
+    questions = sample_questions.model_copy(
+        update={
+            "questions": [
+                sample_questions.questions[0].model_copy(update={"image": "nested/photo.png"})
+            ]
+        }
+    )
+
+    html_path = build_slides(
+        sample_event,
+        questions,
+        sample_wordbank,
+        out_dir,
+        images_dir,
+        backend="reveal",
+        variant="questions",
+    )
+
+    assert (out_dir / "images" / "nested" / "photo.png").read_bytes() == b"image bytes"
+    assert "images/nested/photo.png" in html_path.read_text()
+
+
 def test_reportlab_wraps_sample_multi_word_answers(sample_wordbank):
     cell = (8.5 * inch - 2 * 0.5 * inch) / 5
     max_width = cell - 8

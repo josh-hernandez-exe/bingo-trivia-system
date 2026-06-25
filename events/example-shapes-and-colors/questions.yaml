@@ -1,7 +1,10 @@
 # Demo question set.
 # A few questions have multi-answer groups to exercise the N-1/N-2 stamping.
+# Some answer ids intentionally appear in multiple questions to demonstrate
+# shared bingo cells across easier questions.
+# Q1 includes an event-local image so web/slides image handling has sample data.
 questions:
-  - { index: 1,  prompt: "A color of fire trucks",        answer_ids: [red] }
+  - { index: 1,  prompt: "A color of fire trucks",        answer_ids: [red], image: demo/fire-truck-red.svg }
   - { index: 2,  prompt: "Shape with three sides",        answer_ids: [triangle] }
   - { index: 3,  prompt: "Color of a clear daytime sky",  answer_ids: [blue] }
   - { index: 4,  prompt: "Shape with four equal sides at right angles", answer_ids: [square] }

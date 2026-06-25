@@ -8,7 +8,7 @@
 {% for q in questions %}
 \begin{frame}{Question {{ q.index }}}
   {\Large {{ q.prompt | tex_escape }}}
-  {% if q.image %}\begin{center}\includegraphics[height=0.5\textheight]{ {{- q.image -}} }\end{center}{% endif %}
+  {% if q.image %}\begin{center}\includegraphics[height=0.5\textheight]{images/{{ q.image }}}\end{center}{% endif %}
   {% if variant == 'answers' %}
   \begin{itemize}
     {% for a in q.answers %}\item {% if q.answers|length > 1 %}{{ q.index }}-{{ loop.index }} · {% else %}{{ q.index }} · {% endif %}{{ a | tex_escape }}{% endfor %}

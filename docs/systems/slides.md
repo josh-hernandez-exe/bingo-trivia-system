@@ -19,6 +19,10 @@ source so they cannot drift from the live game.
 - `answers` — prompt + image + revealed answer chips (numbered `N-1`, `N-2`
   for multi-answer groups, matching card stamps)
 
+Images referenced from `questions.yaml` are resolved under `events/<id>/images/`.
+Nested image folders are copied into the Reveal output folder so paths like
+`photos/Queer_media/example.jpg` work in the backup deck.
+
 ## Validation
 
 The builder fails if any `questions.yaml` answer id is missing from

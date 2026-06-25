@@ -14,8 +14,7 @@
     <section>
       <h2>Question {{ q.index }}</h2>
       <p style="font-size:1.6em;">{{ q.prompt }}</p>
-      {% if q.image %}<img src="images/{{ q.image }}" style="max-height:45vh;">
-      {% if q.image_caption %}<div><em>{{ q.image_caption }}</em></div>{% endif %}{% endif %}
+      {% if q.image %}<img src="images/{{ q.image }}" style="max-height:45vh;">{% endif %}
       {% if variant == 'answers' %}
       <div style="margin-top:1em;">
         {% for a in q.answers %}
