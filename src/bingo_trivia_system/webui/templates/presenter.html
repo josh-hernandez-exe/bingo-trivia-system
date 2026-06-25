@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Presenter — {{ event.title }}{% endblock %}
-{% block head %}<link rel="stylesheet" href="/static/presenter.css">{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="/static/presenter.css">{% endblock %}
 {% block content %}
 <div id="presenter">
   <header>
@@ -21,17 +22,42 @@
     <div id="overlayCard"></div>
   </aside>
 
+  <aside id="verifyOverlay" class="verify-overlay hidden" style="display:none;">
+    <form id="verifyForm" class="verify-box">
+      <label for="verifyCardId">Search by name, email, or card ID</label>
+      <input id="verifyCardId" name="card_id" autocomplete="off" spellcheck="false">
+      <div id="verifyHint" class="verify-hint">Type at least 2 characters, or paste a full card ID.</div>
+      <ul id="verifyResults" class="verify-results"></ul>
+      <div class="verify-actions">
+        <button type="submit">Show card</button>
+        <button type="button" id="verifyCancel">Cancel</button>
+      </div>
+    </form>
+  </aside>
+
+  <aside id="answerPassOverlay" class="verify-overlay hidden" style="display:none;">
+    <form id="answerPassForm" class="verify-box">
+      <h2 id="answerPassTitle">Answer pass</h2>
+      <p id="answerPassMessage"></p>
+      <div class="verify-actions">
+        <button type="submit" id="answerPassConfirm">Confirm</button>
+        <button type="button" id="answerPassCancel">Cancel</button>
+      </div>
+    </form>
+  </aside>
+
   <footer class="help">
     <kbd>Space</kbd> next · <kbd>R</kbd> reveal · <kbd>P</kbd> pause ·
-    <kbd>T</kbd> +30s · <kbd>B</kbd> verify-bingo · <kbd>Esc</kbd> hide card
+    <kbd>T</kbd> +30s · <kbd>B</kbd> verify-bingo · <kbd>A</kbd> answer pass ·
+    <kbd>Esc</kbd> hide
   </footer>
 </div>
 
 <script>
-  const eventId = {{ event.id|tojson }};
-  const questions = {{ questions|tojson }};
+  const eventId = {{ event.id| tojson }};
+  const questions = {{ questions| tojson }};
   const post = (action, body) => fetch(`/event/${eventId}/present/${action}`, {
-    method: 'POST', headers: {'Content-Type':'application/json'},
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body || {})
   });
 
@@ -40,10 +66,41 @@
   const answersEl = document.getElementById('answers');
   const overlay = document.getElementById('cardOverlay');
   const overlayCard = document.getElementById('overlayCard');
+  const verifyOverlay = document.getElementById('verifyOverlay');
+  const verifyForm = document.getElementById('verifyForm');
+  const verifyCardId = document.getElementById('verifyCardId');
+  const verifyCancel = document.getElementById('verifyCancel');
+  const verifyHint = document.getElementById('verifyHint');
+  const verifyResults = document.getElementById('verifyResults');
+  const answerPassOverlay = document.getElementById('answerPassOverlay');
+  const answerPassForm = document.getElementById('answerPassForm');
+  const answerPassMessage = document.getElementById('answerPassMessage');
+  const answerPassConfirm = document.getElementById('answerPassConfirm');
+  const answerPassCancel = document.getElementById('answerPassCancel');
+  let currentState = null;
+  let verifyMatches = [];
+  let verifySelectedCardId = null;
+  let verifySearchAbort = null;
+  const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[ch]);
+  const imageUrl = (path) => `/event/${eventId}/images/${path.split('/').map(encodeURIComponent).join('/')}`;
+
+  function timerText(s) {
+    if (!s || s.current_q_index === 0) return '--';
+    if (s.paused || !s.started_at) return s.timer_remaining;
+    const elapsed = Math.max(0, Math.floor(Date.now() / 1000 - s.started_at));
+    return Math.max(0, s.timer_remaining - elapsed);
+  }
+
+  function renderTimer() {
+    document.getElementById('timer').textContent = timerText(currentState);
+  }
 
   function applyState(s) {
+    currentState = s;
     document.getElementById('qIdx').textContent = s.current_q_index;
-    document.getElementById('timer').textContent = s.timer_remaining;
+    renderTimer();
     if (s.current_q_index === 0) {
       stage.textContent = 'Press Space to start.';
       imageWrap.innerHTML = '';
@@ -53,10 +110,11 @@
       if (q) {
         stage.textContent = q.prompt;
         imageWrap.innerHTML = q.image
-          ? `<img src="/static/event-images/${q.image}" alt="">` : '';
-        if (s.revealed) {
-          answersEl.innerHTML = q.answer_ids.map((a, i) =>
-            `<span class="chip">${q.answer_ids.length > 1 ? (q.index + '-' + (i+1)) : q.index} · ${a}</span>`
+          ? `<img src="${imageUrl(q.image)}" alt="">` : '';
+        if (s.revealed || s.answer_pass) {
+          const answers = q.answers || q.answer_ids.map((id) => ({ id, text: id }));
+          answersEl.innerHTML = answers.map((answer, i) =>
+            `<span class="chip">${answers.length > 1 ? (q.index + '-' + (i + 1)) : q.index} · ${escapeHtml(answer.text)}</span>`
           ).join('');
         } else {
           answersEl.innerHTML = '';
@@ -71,8 +129,118 @@
     }
   }
 
+  function openVerifier() {
+    verifyOverlay.style.display = 'flex';
+    verifyOverlay.classList.remove('hidden');
+    verifyCardId.value = '';
+    verifyMatches = [];
+    verifySelectedCardId = null;
+    renderVerifyResults();
+    verifyHint.textContent = 'Type at least 2 characters, or paste a full card ID.';
+    verifyCardId.focus();
+  }
+
+  function closeVerifier() {
+    verifyOverlay.style.display = 'none';
+    verifyOverlay.classList.add('hidden');
+    verifyCardId.value = '';
+    verifyMatches = [];
+    verifySelectedCardId = null;
+    renderVerifyResults();
+  }
+
+  function renderVerifyResults() {
+    verifyResults.innerHTML = verifyMatches.map((match) => {
+      const name = match.display_name ? `${escapeHtml(match.display_name)} · ` : '';
+      return `<li><button type="button" data-card-id="${escapeHtml(match.card_id)}">
+        <strong>${name}${escapeHtml(match.email)}</strong>
+        <span>${escapeHtml(match.card_id)}</span>
+      </button></li>`;
+    }).join('');
+  }
+
+  async function searchVerifyMatches(query) {
+    if (verifySearchAbort) verifySearchAbort.abort();
+    verifySearchAbort = new AbortController();
+    const response = await fetch(`/event/${eventId}/search?q=${encodeURIComponent(query)}`, {
+      signal: verifySearchAbort.signal
+    });
+    return response.json();
+  }
+
+  verifyCardId.addEventListener('input', async () => {
+    const query = verifyCardId.value.trim();
+    verifySelectedCardId = null;
+    if (query.length < 2) {
+      verifyMatches = [];
+      renderVerifyResults();
+      verifyHint.textContent = 'Type at least 2 characters, or paste a full card ID.';
+      return;
+    }
+    verifyHint.textContent = 'Searching...';
+    try {
+      verifyMatches = await searchVerifyMatches(query);
+      renderVerifyResults();
+      verifyHint.textContent = verifyMatches.length
+        ? 'Select a person below, or submit the typed card ID.'
+        : 'No matches found. Try a name, email, or card ID.';
+    } catch (error) {
+      if (error.name !== 'AbortError') verifyHint.textContent = 'Search failed. Paste the card ID to verify.';
+    }
+  });
+
+  verifyResults.addEventListener('click', async (e) => {
+    const button = e.target.closest('button[data-card-id]');
+    if (!button) return;
+    verifySelectedCardId = button.dataset.cardId;
+    await post('show-card', { card_id: verifySelectedCardId });
+    closeVerifier();
+  });
+
+  verifyForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    let cid = verifySelectedCardId || verifyCardId.value.trim();
+    if (!verifySelectedCardId && verifyMatches.length === 1 && !cid.includes('-')) {
+      cid = verifyMatches[0].card_id;
+    }
+    if (!cid) return;
+    if (!cid.includes('-') && verifyMatches.length > 1) {
+      verifyHint.textContent = 'Select a matching person, or paste a full card ID.';
+      return;
+    }
+    await post('show-card', { card_id: cid });
+    closeVerifier();
+  });
+
+  verifyCancel.addEventListener('click', closeVerifier);
+
+  function openAnswerPassConfirm() {
+    const enabling = !(currentState && currentState.answer_pass);
+    answerPassMessage.textContent = enabling
+      ? 'Turn on answer pass? Answers will stay visible as you move through slides.'
+      : 'Turn off answer pass? Answers will stop auto-showing on each slide.';
+    answerPassConfirm.textContent = enabling ? 'Turn on answer pass' : 'Turn off answer pass';
+    answerPassOverlay.style.display = 'flex';
+    answerPassOverlay.classList.remove('hidden');
+    answerPassConfirm.focus();
+  }
+
+  function closeAnswerPassConfirm() {
+    answerPassOverlay.style.display = 'none';
+    answerPassOverlay.classList.add('hidden');
+  }
+
+  answerPassForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    await post('answer-pass');
+    closeAnswerPassConfirm();
+  });
+
+  answerPassCancel.addEventListener('click', closeAnswerPassConfirm);
+
   const es = new EventSource(`/event/${eventId}/present/stream`);
   es.onmessage = (m) => applyState(JSON.parse(m.data));
+  setInterval(renderTimer, 1000);
 
   document.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT') return;
@@ -80,13 +248,21 @@
     else if (e.code === 'ArrowLeft') post('back');
     else if (e.key === 'r' || e.key === 'R') post('reveal');
     else if (e.key === 'p' || e.key === 'P') post('pause');
-    else if (e.key === 't' || e.key === 'T') post('add-time', {seconds: 30});
+    else if (e.key === 't' || e.key === 'T') post('add-time', { seconds: 30 });
     else if (e.key === 'b' || e.key === 'B') {
-      const cid = prompt('Card ID to verify:');
-      if (cid) post('show-card', {card_id: cid});
+      openVerifier();
+      e.preventDefault();
     }
-    else if (e.key === 'a' || e.key === 'A') post('toggle-answers');
-    else if (e.key === 'Escape') post('hide-card');
+    else if (e.key === 'a' || e.key === 'A') {
+      if (currentState && currentState.show_card_id) post('toggle-answers');
+      else openAnswerPassConfirm();
+      e.preventDefault();
+    }
+    else if (e.key === 'Escape') {
+      if (!verifyOverlay.classList.contains('hidden')) closeVerifier();
+      else if (!answerPassOverlay.classList.contains('hidden')) closeAnswerPassConfirm();
+      else post('hide-card');
+    }
   });
 </script>
 {% endblock %}

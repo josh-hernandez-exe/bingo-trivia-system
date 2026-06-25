@@ -25,11 +25,21 @@
 <section>
   <h2>Expected winners (live)</h2>
   <p>Updates as the presenter advances. Useful for false-positive defense.</p>
-  <table id="winners"><thead><tr><th>card</th><th>won at Q</th><th>player</th></tr></thead><tbody></tbody></table>
+  <table id="winners">
+    <thead>
+      <tr>
+        <th>card</th>
+        <th>won at Q</th>
+        <th>player name</th>
+        <th>email</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 </section>
 
 <script>
-  const eventId = {{ event.id|tojson }};
+  const eventId = {{ event.id| tojson }};
   const q = document.getElementById('q');
   const results = document.getElementById('results');
   q.addEventListener('input', async () => {
@@ -48,8 +58,8 @@
     const data = await r.json();
     const tbody = document.querySelector('#winners tbody');
     tbody.innerHTML = data.winners.map(w =>
-      `<tr><td><a href="/event/${eventId}/card/${w.card_id}?show_answers=1" target="_blank">${w.card_id.slice(0,8)}</a></td>
-       <td>${w.won_at}</td><td>${w.email || ''} ${w.display_name || ''}</td></tr>`
+      `<tr><td><a href="/event/${eventId}/card/${w.card_id}?show_answers=1" target="_blank">${w.card_id.slice(0, 8)}</a></td>
+       <td>${w.won_at}</td><td>${w.display_name || ''}</td><td>${w.email || ''}</td></tr>`
     ).join('');
   };
   refreshWinners();

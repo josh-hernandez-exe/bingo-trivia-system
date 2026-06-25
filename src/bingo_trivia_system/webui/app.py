@@ -6,7 +6,7 @@ from pathlib import Path
 
 import yaml
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse, Response, StreamingResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -126,6 +126,15 @@ def create_app() -> FastAPI:
         pdf = renderer.render(card, ctx["wordbank"], ctx["event"], mode="fillable")
         return Response(content=pdf, media_type="application/pdf")
 
+    @app.get("/event/{event_id}/images/{image_path:path}")
+    async def event_image(event_id: str, image_path: str) -> FileResponse:
+        ctx = _ctx(event_id)
+        base = ctx["paths"].images_dir.resolve()
+        target = (base / image_path).resolve()
+        if base not in target.parents or not target.is_file():
+            raise HTTPException(404, "image not found")
+        return FileResponse(target)
+
     @app.get("/event/{event_id}/search")
     async def search(event_id: str, q: str = "") -> JSONResponse:
         ctx = _ctx(event_id)
@@ -174,12 +183,21 @@ def create_app() -> FastAPI:
     async def present(request: Request, event_id: str) -> HTMLResponse:
         ctx = _ctx(event_id)
         session = get_session(event_id, ctx["paths"].runs_dir)
+        text_for = {entry.id: entry.text for entry in ctx["wordbank"].entries}
+        questions = []
+        for question in ctx["questions"]:
+            payload = question.model_dump(mode="json")
+            payload["answers"] = [
+                {"id": answer_id, "text": text_for.get(answer_id, answer_id)}
+                for answer_id in question.answer_ids
+            ]
+            questions.append(payload)
         return templates.TemplateResponse(
             request,
             "presenter.html",
             {
                 "event": ctx["event"],
-                "questions": ctx["questions"],
+                "questions": questions,
                 "state": session.snapshot(),
             },
         )
@@ -201,6 +219,8 @@ def create_app() -> FastAPI:
             session.back()
         elif action == "reveal":
             session.toggle_reveal()
+        elif action == "answer-pass":
+            session.toggle_answer_pass()
         elif action == "pause":
             session.pause()
         elif action == "add-time":

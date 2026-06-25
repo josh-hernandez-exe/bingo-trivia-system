@@ -27,6 +27,7 @@ class PresenterState:
     timer_remaining: int = 60
     show_card_id: str | None = None
     show_answers: bool = False
+    answer_pass: bool = False
     finished: bool = False
 
 
@@ -51,6 +52,12 @@ class PresenterSession:
         self.state.show_answers = False
         self._broadcast()
 
+    def _current_timer_remaining(self) -> int:
+        if self.state.current_q_index <= 0 or self.state.paused or self.state.started_at is None:
+            return self.state.timer_remaining
+        elapsed = max(0, int(time.time() - self.state.started_at))
+        return max(0, self.state.timer_remaining - elapsed)
+
     def back(self) -> None:
         self.state.current_q_index = max(0, self.state.current_q_index - 1)
         self.state.revealed = False
@@ -60,12 +67,24 @@ class PresenterSession:
         self.state.revealed = not self.state.revealed
         self._broadcast()
 
+    def toggle_answer_pass(self) -> None:
+        self.state.answer_pass = not self.state.answer_pass
+        self._broadcast()
+
     def pause(self) -> None:
-        self.state.paused = not self.state.paused
+        if self.state.paused:
+            self.state.paused = False
+            self.state.started_at = time.time()
+        else:
+            self.state.timer_remaining = self._current_timer_remaining()
+            self.state.paused = True
+            self.state.started_at = None
         self._broadcast()
 
     def add_time(self, seconds: int = 30) -> None:
-        self.state.timer_remaining += seconds
+        self.state.timer_remaining = self._current_timer_remaining() + seconds
+        if not self.state.paused and self.state.current_q_index > 0:
+            self.state.started_at = time.time()
         self._broadcast()
 
     def show_card(self, card_id: UUID | str) -> None:
