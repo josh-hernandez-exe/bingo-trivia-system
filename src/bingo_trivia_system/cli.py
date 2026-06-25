@@ -36,6 +36,7 @@ from .email.roster import (
 from .models import (
     EventConfig,
     QuestionSet,
+    SendSettings,
     WordBank,
 )
 from .render import get_renderer
@@ -60,6 +61,7 @@ app.add_typer(docs_app, name="docs")
 app.add_typer(schemas_app, name="schemas")
 
 EventOpt = Annotated[str | None, typer.Option("--event", "-e", help="Event id (or EVENT_DEFAULT)")]
+DEFAULT_SES_SEND_DELAY_SECONDS = 1.1
 
 
 # ---- event --------------------------------------------------------------
@@ -250,6 +252,12 @@ def send(
         "--bcc-sender/--no-bcc-sender",
         help="BCC SES_FROM_ADDR/from-address on every message",
     ),
+    send_delay_seconds: float | None = typer.Option(
+        None,
+        "--send-delay-seconds",
+        min=0.0,
+        help="Seconds to wait between outbound messages; SES defaults to 1.1",
+    ),
 ) -> None:
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -272,19 +280,33 @@ def send(
 
     send_cfg_path = paths.root / "email" / "send.yaml"
     send_cfg = yaml.safe_load(send_cfg_path.read_text()) if send_cfg_path.exists() else {}
-    send_cfg = send_cfg or {}
+    try:
+        send_settings = SendSettings.model_validate(send_cfg or {})
+    except ValueError as exc:
+        raise typer.BadParameter(f"invalid email/send.yaml: {exc}") from exc
     from_addr = os.environ.get("SES_FROM_ADDR")
-    configured_bcc = list(send_cfg.get("bcc", []) or [])
-    configured_bcc_sender = bool(send_cfg.get("bcc_sender", False))
+    configured_bcc = list(send_settings.bcc)
+    configured_bcc_sender = send_settings.bcc_sender
+    configured_send_delay = send_settings.send_delay_seconds
     if bcc is not None:
         configured_bcc.extend(bcc)
     if bcc_sender is not None:
         configured_bcc_sender = bcc_sender
+    if send_delay_seconds is not None:
+        configured_send_delay = send_delay_seconds
+    elif configured_send_delay is None and tname == "ses":
+        configured_send_delay = DEFAULT_SES_SEND_DELAY_SECONDS
     if configured_bcc_sender:
         if not from_addr:
             raise typer.BadParameter("bcc_sender requires SES_FROM_ADDR to be set")
         configured_bcc.append(from_addr)
     configured_bcc = list(dict.fromkeys(item.strip() for item in configured_bcc if item.strip()))
+    try:
+        configured_send_delay_seconds = float(configured_send_delay or 0)
+    except (TypeError, ValueError):
+        raise typer.BadParameter("send_delay_seconds must be a number of seconds") from None
+    if configured_send_delay_seconds < 0:
+        raise typer.BadParameter("send_delay_seconds must be non-negative")
 
     # Resume log: skip already-sent unless --force.
     sent_emails: set[str] = set()
@@ -298,6 +320,7 @@ def send(
     log_path = paths.runs_dir / f"send-{int(time.time())}.jsonl"
     paths.runs_dir.mkdir(parents=True, exist_ok=True)
 
+    sent_count = 0
     with log_path.open("w") as fh:
         for a in assignments.assignments:
             if only and a.email.lower() != only.lower():
@@ -314,7 +337,10 @@ def send(
             message_bcc = [
                 recipient for recipient in configured_bcc if recipient.lower() != a.email.lower()
             ]
+            if sent_count and configured_send_delay_seconds:
+                time.sleep(configured_send_delay_seconds)
             result = tx.send(a.email, subject, html, atts, bcc=message_bcc)
+            sent_count += 1
             fh.write(
                 json.dumps(
                     {

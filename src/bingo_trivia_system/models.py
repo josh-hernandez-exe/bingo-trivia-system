@@ -184,6 +184,16 @@ class Assignments(BaseModel):
         return None
 
 
+class SendSettings(BaseModel):
+    """Event-local email send settings from `email/send.yaml`."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    bcc_sender: bool = False
+    bcc: list[str] = Field(default_factory=list)
+    send_delay_seconds: float | None = Field(default=None, ge=0.0)
+
+
 class EventConfig(BaseModel):
     """Top-level configuration for one event (real or dry-run)."""
 

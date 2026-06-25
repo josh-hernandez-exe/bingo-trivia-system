@@ -1,4 +1,7 @@
 # Demo send settings. Real events can set `bcc_sender: true` to BCC
 # SES_FROM_ADDR on every message, and can list additional BCC recipients below.
+# SES sends default to a 1.1 second gap between messages unless overridden with
+# `send_delay_seconds`.
 bcc_sender: false
 bcc: []
+send_delay_seconds: null

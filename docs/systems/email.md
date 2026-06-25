@@ -64,13 +64,17 @@ events/<id>/email/send.yaml
 Supported keys:
 
 ```yaml
-bcc_sender: true   # BCC SES_FROM_ADDR on every outbound message
-bcc: []            # additional BCC recipients
+bcc_sender: true          # BCC SES_FROM_ADDR on every outbound message
+bcc: []                   # additional BCC recipients
+send_delay_seconds: 1.1   # seconds to wait between outbound messages
 ```
 
 `bts send --bcc <email>` can add BCC recipients for one run, and
-`--bcc-sender/--no-bcc-sender` can override `bcc_sender` for one run. The send
-log records the BCC list used for each recipient.
+`--bcc-sender/--no-bcc-sender` can override `bcc_sender` for one run. `bts send`
+defaults SES sends to a 1.1 second delay between messages, which stays outside a
+1 email/second quota window; `send_delay_seconds` or
+`--send-delay-seconds <seconds>` can override that pacing. The send log records
+the BCC list used for each recipient.
 
 ## Attachment size
 
