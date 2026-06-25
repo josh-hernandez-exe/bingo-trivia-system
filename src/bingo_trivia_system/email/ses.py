@@ -27,6 +27,7 @@ class SESTransport:
         attachments: list[Attachment],
         *,
         from_addr: str | None = None,
+        bcc: list[str] | None = None,
     ) -> SendResult:
         sender = from_addr or self.default_from
         if not sender:
@@ -35,6 +36,8 @@ class SESTransport:
         msg["Subject"] = subject
         msg["From"] = sender
         msg["To"] = to
+        if bcc:
+            msg["Bcc"] = ", ".join(bcc)
         msg.set_content("This message contains an HTML part. View in an HTML-capable client.")
         msg.add_alternative(html, subtype="html")
         for a in attachments:
@@ -48,7 +51,7 @@ class SESTransport:
         try:
             resp = self.client.send_raw_email(
                 Source=sender,
-                Destinations=[to],
+                Destinations=[to, *(bcc or [])],
                 RawMessage={"Data": msg.as_bytes()},
             )
         except Exception as e:

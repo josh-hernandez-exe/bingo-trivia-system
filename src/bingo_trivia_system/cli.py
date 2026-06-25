@@ -244,6 +244,12 @@ def send(
     only: str | None = typer.Option(None, "--only", help="send to only this email"),
     force: bool = typer.Option(False, "--force", help="re-send recipients in latest send log"),
     subject: str = "Your bingo card",
+    bcc: list[str] | None = typer.Option(None, "--bcc", help="BCC recipient; repeatable"),
+    bcc_sender: bool | None = typer.Option(
+        None,
+        "--bcc-sender/--no-bcc-sender",
+        help="BCC SES_FROM_ADDR/from-address on every message",
+    ),
 ) -> None:
     from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -263,6 +269,22 @@ def send(
 
     tname = "dry-run" if dry_run else transport
     tx = get_transport(tname)
+
+    send_cfg_path = paths.root / "email" / "send.yaml"
+    send_cfg = yaml.safe_load(send_cfg_path.read_text()) if send_cfg_path.exists() else {}
+    send_cfg = send_cfg or {}
+    from_addr = os.environ.get("SES_FROM_ADDR")
+    configured_bcc = list(send_cfg.get("bcc", []) or [])
+    configured_bcc_sender = bool(send_cfg.get("bcc_sender", False))
+    if bcc is not None:
+        configured_bcc.extend(bcc)
+    if bcc_sender is not None:
+        configured_bcc_sender = bcc_sender
+    if configured_bcc_sender:
+        if not from_addr:
+            raise typer.BadParameter("bcc_sender requires SES_FROM_ADDR to be set")
+        configured_bcc.append(from_addr)
+    configured_bcc = list(dict.fromkeys(item.strip() for item in configured_bcc if item.strip()))
 
     # Resume log: skip already-sent unless --force.
     sent_emails: set[str] = set()
@@ -289,11 +311,15 @@ def send(
             else:
                 atts.append(Attachment(filename=p.name, content=p.read_bytes()))
             html = tpl.render(event=cfg, card_id=str(a.card_id), display_name=a.display_name)
-            result = tx.send(a.email, subject, html, atts)
+            message_bcc = [
+                recipient for recipient in configured_bcc if recipient.lower() != a.email.lower()
+            ]
+            result = tx.send(a.email, subject, html, atts, bcc=message_bcc)
             fh.write(
                 json.dumps(
                     {
                         "to": a.email,
+                        "bcc": message_bcc,
                         "ok": result.ok,
                         "message_id": result.message_id,
                         "error": result.error,

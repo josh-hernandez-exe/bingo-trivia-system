@@ -1,0 +1,4 @@
+# Demo send settings. Real events can set `bcc_sender: true` to BCC
+# SES_FROM_ADDR on every message, and can list additional BCC recipients below.
+bcc_sender: false
+bcc: []

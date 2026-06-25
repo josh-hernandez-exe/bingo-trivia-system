@@ -34,6 +34,7 @@ class TransportProtocol(Protocol):
         attachments: list[Attachment],
         *,
         from_addr: str | None = None,
+        bcc: list[str] | None = None,
     ) -> SendResult: ...
 
 

@@ -12,7 +12,8 @@ All transports conform to `TransportProtocol`:
 class TransportProtocol(Protocol):
     name: str
     def send(self, to: str, subject: str, html: str,
-             attachments: list[Attachment], *, from_addr: str | None = None) -> SendResult: ...
+             attachments: list[Attachment], *, from_addr: str | None = None,
+             bcc: list[str] | None = None) -> SendResult: ...
 ```
 
 | Transport | Auth | Notes |
@@ -51,6 +52,25 @@ events/<id>/email/invite.html.j2
 
 That template receives `event`, `card_id`, and `display_name`. The CLI `--subject`
 option still controls the email subject.
+
+## Send Settings
+
+Event-local send settings live in:
+
+```text
+events/<id>/email/send.yaml
+```
+
+Supported keys:
+
+```yaml
+bcc_sender: true   # BCC SES_FROM_ADDR on every outbound message
+bcc: []            # additional BCC recipients
+```
+
+`bts send --bcc <email>` can add BCC recipients for one run, and
+`--bcc-sender/--no-bcc-sender` can override `bcc_sender` for one run. The send
+log records the BCC list used for each recipient.
 
 ## Attachment size
 

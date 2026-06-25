@@ -75,6 +75,7 @@ class GraphTransport:
         attachments: list[Attachment],
         *,
         from_addr: str | None = None,
+        bcc: list[str] | None = None,
     ) -> SendResult:
         for a in attachments:
             if len(a.content) > MAX_SIMPLE_ATTACHMENT:
@@ -89,6 +90,9 @@ class GraphTransport:
                 "subject": subject,
                 "body": {"contentType": "HTML", "content": html},
                 "toRecipients": [{"emailAddress": {"address": to}}],
+                "bccRecipients": [
+                    {"emailAddress": {"address": recipient}} for recipient in (bcc or [])
+                ],
                 "attachments": [
                     {
                         "@odata.type": "#microsoft.graph.fileAttachment",

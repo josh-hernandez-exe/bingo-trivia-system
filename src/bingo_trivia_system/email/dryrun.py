@@ -21,11 +21,13 @@ class DryRunTransport:
         attachments: list[Attachment],
         *,
         from_addr: str | None = None,
+        bcc: list[str] | None = None,
     ) -> SendResult:
         att_sizes = [(a.filename, len(a.content)) for a in attachments]
         logger.info(
-            "dry-run: would send subject=%r attachments=%s html_bytes=%d",
+            "dry-run: would send subject=%r bcc=%s attachments=%s html_bytes=%d",
             subject,
+            bcc or [],
             att_sizes,
             len(html),
         )
